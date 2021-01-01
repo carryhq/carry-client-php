@@ -1,0 +1,19 @@
+{
+  "name": "carryhq/carry-client-php",
+  "require": {
+    "php": "^7.4",
+    "ext-curl": "*",
+    "psr/event-dispatcher": "^1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Carry\\": "src/"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
