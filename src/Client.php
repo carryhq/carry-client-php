@@ -4,57 +4,89 @@ declare(strict_types=1);
 
 namespace Carry;
 
-use InvalidArgumentException;
-use Psr\EventDispatcher\EventDispatcherInterface;
+use GuzzleHttp;
+use GuzzleHttp\Psr7\Request;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Client
  * @package Carry
  */
-class Client implements EventDispatcherInterface
+class Client implements ClientInterface
 {
     /**
      * @var string
      */
-    private string $endpoint;
+    private string $apiKey;
+
+    /**
+     * @var string
+     */
+    private string $collectionId;
+
+    /**
+     * @var GuzzleHttp\Client
+     */
+    private GuzzleHttp\Client $httpClient;
 
     /**
      * Client constructor.
-     * @param string $endpoint
+     * @param string $apiKey
+     * @param string $collectionId
      */
-    public function __construct(string $endpoint)
+    public function __construct(string $apiKey, string $collectionId)
     {
-        $this->endpoint = $endpoint;
+        $this->apiKey = $apiKey;
+        $this->collectionId = $collectionId;
+        $this->httpClient = new GuzzleHttp\Client();
     }
 
     /**
-     * @return string
+     * @param RequestInterface $request
+     * @throws ClientExceptionInterface
      */
-    public function getEndpoint(): string
+    public function track(RequestInterface $request): void
     {
-        return $this->endpoint;
+        $this->sendRequest($request);
     }
 
     /**
-     * @param object $event
-     * @return object|void
+     * @param Event $event
+     * @return Event
+     * @throws ClientExceptionInterface
      */
-    public function dispatch(object $event)
+    public function dispatch(Event $event): Event
     {
-        if (!$event instanceof Event) {
-            throw new InvalidArgumentException(sprintf(
-                "Dispatched event must be an instance of '%s'; '%s' given",
-                Event::class,
-                get_class($event)
-            ));
-        }
+        $payload = get_object_vars($event);
+        $payload['event'] = $event->getName();
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->endpoint);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, get_object_vars($event));
-        curl_exec($ch);
+        unset($payload['name']);
 
-        curl_close($ch);
+        $this->sendRequest(new Request(
+            'POST',
+            sprintf('https://carry.events/api/v1/collection/%s/request', $this->collectionId),
+            [
+                'Authorization' => sprintf('Bearer %s', $this->apiKey),
+                'Content-Type' => 'application/json',
+            ],
+            json_encode($payload),
+        ));
+
+        return $event;
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @return ResponseInterface
+     * @throws ClientExceptionInterface
+     */
+    public function sendRequest(RequestInterface $request): ResponseInterface
+    {
+        return $this->httpClient->sendRequest($request
+            ->withAddedHeader('User-Agent', 'Carry-Client (PHP); 1.0.0')
+        );
     }
 }
