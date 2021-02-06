@@ -48,7 +48,7 @@ class Client implements ClientInterface
      * @param RequestInterface $request
      * @throws ClientExceptionInterface
      */
-    public function track(RequestInterface $request): void
+    public function log(RequestInterface $request): void
     {
         $this->sendRequest($request);
     }
@@ -62,12 +62,11 @@ class Client implements ClientInterface
     {
         $payload = get_object_vars($event);
         $payload['event'] = $event->getName();
+        $payload['collectionId'] = $this->collectionId;
 
         unset($payload['name']);
 
-        $this->sendRequest(new Request(
-            'POST',
-            sprintf('https://carry.events/api/v1/collection/%s/request', $this->collectionId),
+        $this->sendRequest(new Request('POST', 'https://in.carry.events/events',
             [
                 'Authorization' => sprintf('Bearer %s', $this->apiKey),
                 'Content-Type' => 'application/json',
