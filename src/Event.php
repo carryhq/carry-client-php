@@ -8,7 +8,7 @@ namespace Carry;
  * Class Event
  * @package Carry
  */
-class Event
+class Event implements EventInterface
 {
     /**
      * @var string
