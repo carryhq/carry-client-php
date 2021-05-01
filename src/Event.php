@@ -13,8 +13,6 @@ use Ramsey\Uuid\Uuid;
  */
 class Event implements EventInterface
 {
-    public const CLOUD_EVENT_SPEC_VERSION = '1.0';
-
     /**
      * @var string
      */
