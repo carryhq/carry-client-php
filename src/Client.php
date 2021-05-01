@@ -20,17 +20,17 @@ class Client implements ClientInterface
     /**
      * @var string
      */
-    private string $source;
-
-    /**
-     * @var string
-     */
     private string $apiKey;
 
     /**
      * @var string
      */
     private string $collectionId;
+
+    /**
+     * @var string
+     */
+    private string $source;
 
     /**
      * @var GuzzleHttp\Client
@@ -44,15 +44,15 @@ class Client implements ClientInterface
 
     /**
      * Client constructor.
-     * @param string $source
      * @param string $apiKey
      * @param string $collectionId
+     * @param string $source
      */
-    public function __construct(string $source, string $apiKey, string $collectionId)
+    public function __construct(string $apiKey, string $collectionId, string $source)
     {
-        $this->source = $source;
         $this->apiKey = $apiKey;
         $this->collectionId = $collectionId;
+        $this->source = $source;
         $this->httpClient = new GuzzleHttp\Client();
     }
 
@@ -111,16 +111,16 @@ class Client implements ClientInterface
     /**
      * @return string
      */
-    public function getSource(): string
+    public function getCollectionId(): string
     {
-        return $this->source;
+        return $this->collectionId;
     }
 
     /**
      * @return string
      */
-    public function getCollectionId(): string
+    public function getSource(): string
     {
-        return $this->collectionId;
+        return $this->source;
     }
 }
