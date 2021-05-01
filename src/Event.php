@@ -16,17 +16,22 @@ class Event implements EventInterface
     /**
      * @var string
      */
+    private string $type;
+
+    /**
+     * @var iterable|null
+     */
+    private ?iterable $data;
+
+    /**
+     * @var string
+     */
     private string $id;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $source;
-
-    /**
-     * @var string
-     */
-    private string $type;
+    private ?string $source;
 
     /**
      * @var string|null
@@ -44,22 +49,40 @@ class Event implements EventInterface
     private ?string $subject;
 
     /**
-     * @var iterable|null
-     */
-    private ?iterable $data;
-
-    /**
      * @var DateTimeInterface|null
      */
     private ?DateTimeInterface $time;
 
     /**
      * Event constructor.
+     * @param string $type
+     * @param iterable|null $data
+     * @param string|null $id
+     * @param string|null $source
+     * @param string|null $dataContentType
+     * @param string|null $dataSchema
+     * @param string|null $subject
+     * @param DateTimeInterface|null $time
      */
-    public function __construct()
+    public function __construct(
+        string $type,
+        ?iterable $data,
+        ?string $id = null,
+        ?string $source = null,
+        ?string $dataContentType = null,
+        ?string $dataSchema = null,
+        ?string $subject = null,
+        ?DateTimeInterface $time = null
+    )
     {
-        $this->setId((string)Uuid::uuid4());
-        $this->dataSchema = 'application/json';
+        $this->type = $type;
+        $this->data = $data;
+        $this->id = $id ?? (string)Uuid::uuid4();
+        $this->source = $source ?? 'Unknown';
+        $this->dataContentType = $dataContentType;
+        $this->dataSchema = $dataSchema;
+        $this->subject = $subject;
+        $this->time = $time;
     }
 
     /**
@@ -68,6 +91,44 @@ class Event implements EventInterface
     public function getSpecVersion(): string
     {
         return static::CLOUD_EVENT_SPEC_VERSION;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     * @return Event
+     */
+    public function setType(string $type): Event
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return iterable|null
+     */
+    public function getData(): ?iterable
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param iterable|null $data
+     * @return Event
+     */
+    public function setData(?iterable $data): Event
+    {
+        $this->data = $data;
+
+        return $this;
     }
 
     /**
@@ -90,39 +151,20 @@ class Event implements EventInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSource(): string
+    public function getSource(): ?string
     {
         return $this->source;
     }
 
     /**
-     * @param string $source
+     * @param string|null $source
      * @return Event
      */
-    public function setSource(string $source): Event
+    public function setSource(?string $source): Event
     {
         $this->source = $source;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param string $type
-     * @return Event
-     */
-    public function setType(string $type): Event
-    {
-        $this->type = $type;
 
         return $this;
     }
@@ -180,25 +222,6 @@ class Event implements EventInterface
     public function setSubject(?string $subject): Event
     {
         $this->subject = $subject;
-
-        return $this;
-    }
-
-    /**
-     * @return iterable|null
-     */
-    public function getData(): ?iterable
-    {
-        return $this->data;
-    }
-
-    /**
-     * @param iterable|null $data
-     * @return Event
-     */
-    public function setData(?iterable $data): Event
-    {
-        $this->data = $data;
 
         return $this;
     }

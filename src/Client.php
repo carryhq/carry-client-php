@@ -38,6 +38,11 @@ class Client implements ClientInterface
     private GuzzleHttp\Client $httpClient;
 
     /**
+     * @var string
+     */
+    private string $eventsEndpoint = 'https://in.carry.events/events';
+
+    /**
      * Client constructor.
      * @param string $source
      * @param string $apiKey
@@ -67,16 +72,20 @@ class Client implements ClientInterface
      */
     public function dispatch(Event $event): Event
     {
-        $payload = get_object_vars($event);
-        $payload['specversion'] = $event->getSpecVersion();
-        $payload['id'] = $event->getId();
-        $payload['type'] = $event->getType();
-        $payload['source'] = $event->getSource();
-        $payload['collectionId'] = $this->collectionId;
+        $payload = array_filter([
+            'specversion' => $event->getSpecVersion(),
+            'type' => $event->getType(),
+            'id' => $event->getId(),
+            'source' => $event->getSource() ?? $this->source,
+            'data' => $event->getData(),
+            'datacontenttype' => $event->getDataContentType(),
+            'dataschema' => $event->getDataSchema(),
+            'subject' => $event->getSubject(),
+            'time' => $event->getTime(),
+            'collectionId' => $this->collectionId,
+        ]);
 
-        unset($payload['name']);
-
-        $this->sendRequest(new Request('POST', 'https://in.carry.events/events',
+        $this->sendRequest(new Request('POST', $this->eventsEndpoint,
             [
                 'Authorization' => sprintf('Bearer %s', $this->apiKey),
                 'Content-Type' => 'application/cloudevents+json',

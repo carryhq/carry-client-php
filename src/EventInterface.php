@@ -20,9 +20,9 @@ interface EventInterface
     public function getId(): string;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSource(): string;
+    public function getSource(): ?string;
 
     /**
      * @return string
