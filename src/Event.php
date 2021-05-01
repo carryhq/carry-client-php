@@ -78,7 +78,7 @@ class Event implements EventInterface
         $this->type = $type;
         $this->data = $data;
         $this->id = $id ?? (string)Uuid::uuid4();
-        $this->source = $source ?? 'Unknown';
+        $this->source = $source;
         $this->dataContentType = $dataContentType;
         $this->dataSchema = $dataSchema;
         $this->subject = $subject;
