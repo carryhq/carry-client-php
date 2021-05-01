@@ -20,6 +20,11 @@ class Client implements ClientInterface
     /**
      * @var string
      */
+    private string $source;
+
+    /**
+     * @var string
+     */
     private string $apiKey;
 
     /**
@@ -34,11 +39,13 @@ class Client implements ClientInterface
 
     /**
      * Client constructor.
+     * @param string $source
      * @param string $apiKey
      * @param string $collectionId
      */
-    public function __construct(string $apiKey, string $collectionId)
+    public function __construct(string $source, string $apiKey, string $collectionId)
     {
+        $this->source = $source;
         $this->apiKey = $apiKey;
         $this->collectionId = $collectionId;
         $this->httpClient = new GuzzleHttp\Client();
@@ -61,7 +68,10 @@ class Client implements ClientInterface
     public function dispatch(Event $event): Event
     {
         $payload = get_object_vars($event);
-        $payload['event'] = $event->getName();
+        $payload['specversion'] = $event->getSpecVersion();
+        $payload['id'] = $event->getId();
+        $payload['type'] = $event->getType();
+        $payload['source'] = $event->getSource();
         $payload['collectionId'] = $this->collectionId;
 
         unset($payload['name']);
@@ -69,7 +79,7 @@ class Client implements ClientInterface
         $this->sendRequest(new Request('POST', 'https://in.carry.events/events',
             [
                 'Authorization' => sprintf('Bearer %s', $this->apiKey),
-                'Content-Type' => 'application/json',
+                'Content-Type' => 'application/cloudevents+json',
             ],
             json_encode($payload),
         ));
@@ -87,5 +97,21 @@ class Client implements ClientInterface
         return $this->httpClient->sendRequest($request
             ->withAddedHeader('User-Agent', 'Carry-Client (PHP); 1.0.0')
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function getSource(): string
+    {
+        return $this->source;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCollectionId(): string
+    {
+        return $this->collectionId;
     }
 }

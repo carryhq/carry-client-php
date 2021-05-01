@@ -13,10 +13,10 @@ interface EventInterface
     /**
      * @return string
      */
-    public function getName(): string;
+    public function getType(): string;
 
     /**
-     * @return iterable
+     * @return iterable|null
      */
-    public function getProperties(): iterable;
+    public function getData(): ?iterable;
 }

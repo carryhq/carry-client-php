@@ -1,5 +1,6 @@
 {
   "name": "carryhq/carry-client-php",
+  "description": "Client to dispatch events",
   "require": {
     "php": "^7.4",
     "ext-curl": "*",
@@ -7,7 +8,8 @@
     "guzzlehttp/guzzle": "^7.2",
     "guzzlehttp/psr7": "^1.7",
     "psr/http-client": "^1.0",
-    "psr/http-message": "^1.0"
+    "psr/http-message": "^1.0",
+    "ramsey/uuid": "^4.1"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.0"
