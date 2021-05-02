@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Carry;
 
+use DateTimeImmutable;
 use GuzzleHttp;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -81,7 +82,7 @@ class Client implements ClientInterface
             'datacontenttype' => $event->getDataContentType(),
             'dataschema' => $event->getDataSchema(),
             'subject' => $event->getSubject(),
-            'time' => $event->getTime(),
+            'time' => $event->getTime() ?? new DateTimeImmutable(),
             'collectionId' => $this->collectionId,
         ]);
 
