@@ -66,7 +66,7 @@ class Event implements EventInterface
      */
     public function __construct(
         string $type,
-        ?iterable $data,
+        ?iterable $data = null,
         ?string $id = null,
         ?string $source = null,
         ?string $dataContentType = null,
