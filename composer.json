@@ -2,7 +2,7 @@
   "name": "carryhq/carry-client-php",
   "description": "Client to dispatch events",
   "require": {
-    "php": "^7.4",
+    "php": "^7.4|^8.0",
     "ext-curl": "*",
     "ext-json": "*",
     "guzzlehttp/guzzle": "^7.2",
